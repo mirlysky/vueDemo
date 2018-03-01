@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Vue Basic</title>
+</head>
+<body>
+	<div id="app-1">
+		<div>
+			<label for="nameInput">改变姓名:</label>
+			<input type="text" id="nameInput" v-model='basicInfo.name'/>
+		</div>
+		<!-- rel索引可以通过Javascript直接获取子组件 -->
+		<user-component rel='user' v-bind:user='basicInfo' v-on:increment="ageIncre"></user-component>
+	</div>
+</body>
+<script src="vue.js"></script>
+<script>
+	// 局部注册组件
+	// Props 允许外部环境传递数据给组件
+	// Events 允许组件触发外部环境的副作用
+	// Slots 允许外部环境将额外的内容组合在组件中。
+	var person = {
+		// props不支持大小写,大写字母会被转化为小写字母
+		props:{
+			// 1)prop可以使用校验，也可以设置默认值
+			user:{
+				type:Object,
+				default:function(){
+					return {name:'default',age:0}
+				}
+			}
+		},
+		template:'<div>'+
+					'<div>初始姓名：{{name}}</div>'+
+					'<div>当前姓名：{{user.name}}</div>'+					
+					'<div><span>年龄：{{fakeAge}}</span><button v-on:click="addAge">Add</button></div>'+
+					'<div>喜爱的食物：{{food}}</div>'+
+				'</div>',
+		// 组件的data必须是函数
+		data:function(){
+			//2)prop:初始化组件data的值
+			return {food:'苹果',name:this.user.name};
+		},
+		// 3)prop:处理后使用
+		computed:{
+			fakeAge:function(){
+				return this.user.age+'岁';
+			}
+		},
+		// 自定义事件
+		// 通过$on监听事件,$emit触发事件，这样子可以向父通知
+		// 这个例子中，子绑定click调用addAge后触发increment事件，调用父的ageIncre方法
+		methods:{
+			addAge:function(){
+				this.user.age++;
+				this.$emit('increment');
+			}
+		}
+	};
+	var vm = new Vue({
+		el:'#app-1',
+		data:{
+			basicInfo:{
+				name:'林克',
+				age:15				
+			}
+		},
+		// 局部注册组件只能在vm父组件中调用
+		components:{
+			'user-component':person
+		},
+		methods:{
+			ageIncre:function(){
+				console.log('age change');
+			}
+		}
+	});
+	// 非父子组件之间的通讯
+	// 1)使用一个空的vue作为事件总线,在组件A中创建事件,在组建B中触发事件
+	var bus = new Vue();
+	bus.$on('xxxx',function(){
+		console.log('xx is emited');
+	});
+	bus.$emit('xxxx');
+</script>
+</html>

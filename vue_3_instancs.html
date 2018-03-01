@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Vue Intro</title>
+	<style>
+	.app{
+		border-bottom: 1px solid;
+		padding: .5rem 0 ;
+	}
+	</style>
+</head>
+<body>
+	<!-- 模板的语法 -->
+	<div id="app">
+
+		<!-- 普通插值插入的是纯文本 -->
+		<div >u r {{name}}</div>
+
+		<!-- 使用v-once的话不会进行数据绑定 -->
+		<div v-once>u r {{name}}</div>
+
+		<!-- v-bind用于绑定属性，对布尔属性，如果条件值是false的话该属性会被去除 -->
+		<!-- 也可以使用表达式、三元表达式 -->
+		<!-- v-bind的缩写，如下面的id => :id=id+"-"+num -->
+		<button v-bind:id=id+"-"+num v-bind:disabled="disable" v-bind:first=num?"yes":"no">Click</button>
+		
+		<!-- 其他的指令还有v-on、v-if、v-for -->
+
+		<!-- v-if根据条件的值来判断是否移除dom。条件也是条件语句-->
+		<!-- 将v-else放在v-if的后面 -->
+		<button v-if="disable">Yes</button>
+		<button v-else>No</button>
+		
+		<!-- v-on用于监听dom事件 -->
+		<!-- v-on的缩写 @on="clickFunc()"
+		<!-- 修饰符. 就是用特殊的方式绑定，比如.prevent就是添加了 event.preventDefault,这样就阻止了表单的默认提交 .stop阻止冒泡 .once .self .capture-->
+		<form v-on:submit.prevent="subFunc()">
+			<button v-on:click="clickFunc" type="submit">Click</button>
+		</form>
+
+		<!-- v-for可以遍历,通过in遍历集合或数组,第二个参数代表当前索引 -->
+		<div>
+			<ol>
+				<li v-for="(fruit,index) in fruits">{{fruit}}-{{index}}</li>
+			</ol>
+			<!-- 也支持template来渲染多个元素块 -->
+			<template v-for="(fruit,index) in fruits">
+				<div>{{fruit}}</div>
+			</template>
+			<!-- 也可以遍历对象，第二个参数为key值，第三个参数为索引 -->
+			<ul>
+				<li v-for="(val,key,index) in obj">{{index}}-{{key}}-{{val}}</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- 计算属性 -->
+	<div id="app2">
+		<div>初始值: {{msg}}</div>
+		<div>计算属性反转: {{rmsg}}</div>
+		<!-- 调用方法反转每次mount时都会调用，计算属性是基于缓存的，只有当msg改变时才会调用 -->
+		<div>调用方法反转：{{reverseMsg()}}</div>
+		<!-- 使用watch -->
+		<div>使用watch：{{fullName}}</div>
+		<!-- 使用计算属性，可以看到代码更加简洁 -->
+		<div>使用计算属性：{{rfullName}}</div>
+	</div>
+
+	<!-- 使用watch进行异步响应数据变化-->
+	<div id="watchTest">
+		<div>
+			<label for="question">input your question:</label>
+			<input type="text" id="question" v-model="question"/>
+			<p>{{answer}}</p>
+		</div>
+	</div>
+	
+	<!-- class与style的绑定-->
+	<div id="classTest">
+		<div v-bind:class="{ active:isActive , 'text-danger':hasError}">DOM绑定</div>
+		<!-- 绑定class到对象上 -->
+		<!-- 更进一步，可以将其绑定到计算属性上，实现更复杂的样式 -->
+		<!-- 也可以直接通过对象绑定style,并且加前缀 -->
+		<div v-bind:class="classObj" v-bind:style="styleObj">Vue对象绑定</div>
+	</div>
+
+	<!-- v-if的应用 key代表的是每一个单独的key，这样这两个input就是不同的，若去掉key的话，则只会替换placeholder-->
+	<!-- template是html片段容器 -->
+	<div id="login">
+		<template v-if="loginType === 'username'">
+			<label>Username</label>
+			<input placeholder="Enter your username" key="username-input">
+		</template>
+		<template v-else>
+			<label>Email</label>
+			<input placeholder="Enter your email address" key="email-input">
+		</template>		
+	</div>
+
+	<!-- v-for与component例子 -->
+	<!-- 对todoApp.todolist进行shift(),push(),reverse()操作都会同步刷新视图 -->
+	<!-- 但是todoApp.todolist[0] = xxx 不会刷新视图，因为vue会在最开始初始化对对象实例进行getter/setter的转化，所以属性必须在data上才能响应式 -->
+	<!-- 需要使用vue的set方法来改变 => Vue.set(todoApp.todolist,0,'xxxx')-->
+	<div id="todo-list">
+		<!-- 在监听键盘事件时添加了按键修饰符 enter,tap,space,up,down,left,right,delete(包括退格键),ctrl,shift,alt,meta -->
+		<!-- v-model也有修饰符 .trim .number .lazy -->
+		<input type="text" v-model.trim="newTodo" v-on:keyup.enter="addNewTodo()" placeholder="enter your todo"/>
+		<div>
+			<ul>
+				<todo-item v-for="(todo,index) in todolist" v-bind:title='todo' v-on:remove='removeTodo(index)' v-bind:key='index'></todo-item>
+			</ul>
+		</div>
+		<div>
+			<input type="checkbox" v-model="checkList" value="1"/>
+			<input type="checkbox" v-model="checkList" value="2"/>
+			<span>{{checkList}}</span>
+		</div>
+		<div>
+			<label for="one">one</label><input id="one" type="radio" value="one" v-model="radio"/>
+			<label for="two">two</label><input id="two" type="radio" value="two" v-model="radio"/>
+			{{radio}}
+		</div>
+		<div>
+			<select v-model="select">
+				<option v-for="option in options" v-bind:value="option.val">{{option.text}}</option>
+			</select>
+			{{select}}
+		</div>
+	</div>
+</body>
+<script src="vue.js"></script>
+<script>
+	// 给组件绑定click事件，click事件触发Vue中定义的事件，从而操作Vue中data的值
+	Vue.component('todo-item',{
+		template:'<li>'+
+					'<span>{{title}}</span>'+
+					'<button v-on:click="$emit(\'remove\')">X</button>'+
+				 '</li>',
+		props:['title']
+	});
+	var todoApp = new Vue({
+		el:'#todo-list',
+		data:{
+			todolist:[],
+			newTodo:'',
+			checkList:[],
+			radio:'',
+			select:'',
+			options:[
+				{text:'one',val:'A'},
+				{text:'two',val:'B'},
+				{text:'three',val:'C'}								
+			]
+		},
+		methods:{
+			addNewTodo:function(){
+				this.todolist.push(this.newTodo);
+				this.newTodo = '';
+			},
+			removeTodo:function(i){
+				this.todolist.splice(i,1);
+			}
+		}
+	});
+</script>
+<script>
+var timer;
+var data = {
+	name:"lan",
+	id:"btn",
+	disable:true,
+	num:1,
+	fruits:["apple","pear","orange","watermellon"],
+	obj:{
+		firstName:"lan",
+		lastName:"tian"
+	}
+};
+
+var vm = new Vue({
+	el:"#app",
+	data:data,
+	created:function(){
+		console.log('created');
+	},
+	mounted:function(){
+		console.log('mounted');
+	},
+	updated:function(){
+		console.log('updated');
+	},
+	destoryed:function(){
+		console.log('destoryed');
+	},
+	methods:{
+		clickFunc:function(event){
+			alert('click');
+			// 通过this获取当前的vue对象
+			// 通过event.target对象获取DOM对象
+			alert(event.target.tagName);
+		},
+		subFunc:function(){
+			alert('sub');
+		}
+	}
+});
+/*vm.data 和 data进行了关联，修改其中任何一个值，另一个都会改变S*/
+	// console.log(vm.$data);
+	// console.log(vm.$el);
+	/*watch实例方法在vm.name的值改变之后调用*/
+	vm.$watch('name',function(newVal,oldVal){
+		console.log("name changed from "+oldVal+" to "+newVal);
+	});
+
+	/*computed中的就是计算属性，他是一个getter*/
+	var app2 = new Vue({
+		el:'#app2',
+		data:{
+			msg:'Hello I am balala .',
+			firstName:'Micale',
+			lastName:'Jackson',
+			fullName:'Micale Jackson'
+		},
+		computed:{
+			//取得计算属性的getter
+			rmsg:function(){
+				//this指向的是app2
+				return this.msg.split('').reverse().join('');
+			},
+			rfullName:function(){
+				return this.firstName+' '+this.lastName;
+			}
+		},
+		methods:{
+			reverseMsg:function(){
+				return this.msg.split('').reverse().join('');
+			}
+		},
+		watch:{
+			firstName:function(val){
+				this.fullName = val + ' ' + this.lastName
+			},
+			lastName:function(val){
+				this.fullName = this.firstName + ' ' + val
+			}
+		}
+	});
+
+	var watchDemo = new Vue({
+		el:'#watchTest',
+		data:{
+			question:'',
+			answer:'just say something ~'
+		},
+		watch:{
+			question:function(){
+				this.answer = 'wating for you to stop ...';
+				if(this.question)
+					this.getAnswer();
+			}
+		},
+		methods:{
+			getAnswer:function(){
+				var vm = this;
+				clearTimeout(timer);
+				timer = setTimeout(function(){
+					vm.answer = 'well , let me tell you ths answer about ' + vm.question;
+					/*ajax...*/
+				},500);
+			}
+		}
+	});
+
+	var classTest = new Vue({
+		el:'#classTest',
+		data:{
+			isActive:true,
+			hasError:false,
+			classObj:{
+				active:true,
+				error:true,
+			},
+			styleObj:{
+				color:'white',
+				background:'black',
+				transform:'scale(0.9)'
+			}
+		}
+	})
+
+	var login = new Vue({
+		el:'#login',
+		data:{
+			loginType:'username'
+		}
+	})
+
+
+	</script>
+	</html>

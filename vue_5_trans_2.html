@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>多组件过渡</title>
+</head>
+<style>
+.component-fade-enter-active, .component-fade-leave-active {
+	transition: opacity .3s ease;
+}
+.component-fade-enter, .component-fade-leave-active {
+	opacity: 0;
+}
+</style>
+<body>
+	<!-- 多组件过渡，通过动态组件实现 -->
+	<div id="ex1">
+		<label for="A">A</label><input type="radio" id="A" value="A" v-model="radio"/>
+		<label for="B">B</label><input type="radio" id="B" value="B" v-model="radio"/>
+		<!-- 过渡模式：out-in、in-out，分别是先进后出，先出后进 -->
+		<transition name="component-fade" mode="out-in">
+			<!-- 通过is动态加载组件 -->
+			<component v-bind:is="view"></component>
+		</transition>	
+	</div>	
+</body>
+<script src="vue.js"></script>
+<script>
+new Vue({
+	el: '#ex1',
+	data: {
+		radio:'A'
+	},
+	computed:{
+		view:function(){
+			if(this.radio=='A'){
+				return 'v-a'
+			}else{
+				return 'v-b'
+			}
+		}
+	},
+	components: {
+		'v-a': {
+			template: '<div>Component A</div>'
+		},
+		'v-b': {
+			template: '<div>Component B</div>'
+		}
+	}
+})
+</script>
+</html>

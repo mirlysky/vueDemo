@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Vue Intro</title>
+	<style>
+	.app{
+		border-bottom: 1px solid;
+		padding: .5rem 0 ;
+	}
+	</style>
+</head>
+<body>
+	<!-- 指令,渲染 -->
+	<div id="app" class="app">
+		<p>
+			<span v-bind:id="id" v-bind:title="time">
+				{{text}}
+			</span>			
+		</p>
+	</div>
+
+	<!-- 条件语句if -->
+	<!-- 如果条件为false的话，就不把这个元素插入到doom了 -->
+	<div id="app-2" class="app" v-if="seen">
+		now you can see me .
+	</div>
+
+	<!-- 循环语句for -->
+	<div id="app-3" class="app">
+		<ul>
+			<li v-for="item in items">{{item.name}}</li>
+		</ul>
+	</div>
+
+	<!-- 渲染 -->
+	<!-- 通过v-model可以进行双向数据绑定，直接操作data，通过vue改变dom-->
+	<!-- 通过v-on绑定事件，方法在methods中，可以通过this.xxx操作data，从而改变dom -->
+	<div id="app-4" class="app">
+		<p><span>hi {{ person.name }}</span> , <span>you are {{ person.age}} years old ?</span></p>
+		<div>
+			<input type="text" v-model="person.name" placeholder="name"/>
+			<button v-on:click="addAge()">Add</button>			
+		</div>
+	</div>
+
+	<!-- 组件 -->
+	<!-- 使用了todo-item这个组件，并使用v-for与v-bind -->	
+	<div id="app-5" class="app">
+		<ul>
+			<todo-item v-for="item in todolist" v-bind:todo="item"></todo-item>
+		</ul>
+	</div>
+</body>
+<script src="vue.js"></script>
+<script>
+/*基础渲染,v-bind的应用*/
+var app = new Vue({
+	el:"#app",
+	data:{
+		id:'time',
+		time:'you load this page on'+new Date(),
+		text:'hover on this to see some thing .'
+	}
+});
+
+/*if条件语句的应用,v-if*/
+var app2 = new Vue({
+	el:"#app-2",
+	data:{
+		seen:true
+	}
+});
+
+/*for循环语句的应用,v-for*/
+var app3 = new Vue({
+	el:"#app-3",
+	data:{
+		items:[
+		{name:"John"},
+		{name:"Bob"},
+		{name:"Lina"}
+		]
+	}
+});
+
+/*绑定方法与表单数据的应用,v-on,v-model*/
+var app4 = new Vue({
+	el:"#app-4",
+	data:{
+		person:{
+			name:"someone",
+			age:19
+		}
+	},
+	methods:{
+		addAge:function(){
+			this.person.age++;
+		}
+	}
+});
+
+/*类似React:创建一个名为li-item的组件*/
+/*他有一个props属性，这个属性是他的父元素，即引用这个组件的元素传给他的*/
+Vue.component('todo-item', {
+	props: ['todo'],
+	template: '<li>'+
+	'<div>'+
+	'{{ todo.name }}'+
+	'</div>'+
+	'<div>'+
+	'{{ todo.sex}}'+
+	'</div>'+
+	'</li>',
+});
+
+var app5 = new Vue({
+	el:"#app-5",
+	data:{
+		todolist:[
+		{name:"lt",sex:"male"},
+		{name:"lian",sex:"male"},
+		{name:"bob",sex:"male"}
+		]
+	}
+})
+</script>
+</html>

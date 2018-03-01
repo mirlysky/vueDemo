@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Vue Basic</title>
+</head>
+<style>
+.young{
+	background: red;
+	color: white;
+}
+.old{
+	background: green;
+	color: white;
+}
+</style>
+<body>
+	<div id="app" class="app">
+		<!-- v-model 与 watch 与 v-bind 与 v-bind的表达式 -->
+		<div>
+			<div v-bind:id="full_name" v-bind:first=num?"yes":"no">姓名：{{ full_name }}</div>	
+			<!-- v-once只会进行初始化 -->
+			<div v-once>初始姓名：{{ full_name }}</div>
+			<div>
+				<label for="input1">改变姓：</label>
+				<!-- model的修饰词:.trim .number .lazy -->
+				<input type="text" id="input1" v-model.trim="first_name"/>				
+			</div>	
+			<div>
+				<label for="input2">改变名：</label>
+				<input type="text" id="input2" v-model="last_name"/>				
+			</div>	
+		</div>
+		<!-- v-on 与 v-on修饰符 与 computed -->
+		<!-- v-on修饰符：.stop .once .self .capture -->
+		<form v-on:submit.prevent="subFunc()">
+			<div>
+				<div>年龄：{{ age }}</div>
+				<div><button v-on:click="addAge()" type="submit">增加年龄</button></div>
+				<div>出生年份：{{ birth_year }}</div>
+			</div>			
+		</form>
+		<!-- watch 与 computed 各有千秋，各有各的长处 -->
+		<!-- v-if 与 class样式绑定-->
+		<div v-bind:class="{ 'old': age >24 ,'young':age<=24}">
+			<div v-if="age > 24">他是一个成年人</div>
+			<div v-else>他还未成年成年人</div>			
+		</div>
+		<!-- v-for -->
+		<div>
+			<div>喜欢的食物：</div>
+			<!-- 遍历数组 -->
+			<ul>
+				<li v-for="(fruit,index) in fruits">{{ index }}-{{ fruit }}</li>
+			</ul>
+			<!-- 遍历对象 -->
+			<div>养过的宠物：</div>
+			<ul>
+				<li v-for="(val,key,index) in pets">{{ key }}:{{ val }}</li>
+			</ul>
+		</div>
+	</div>
+</body>
+<script src="vue.js"></script>
+<script>
+var data = {
+	first_name:'Mike',
+	last_name:'Miller',
+	full_name:'Mike Miller',
+	age:18,
+	fruits:['苹果','香蕉','西瓜'],
+	pets:{
+		'name':'小白',
+		'sex':'男',
+		'age':3
+	}
+};
+var app = new Vue({
+	el:"#app",
+	data:data,
+	//创建
+	created:function(){
+		console.log('created');
+	},
+	//渲染
+	mounted:function(){
+		console.log('mounted');
+	},
+	//更新——当data改变时触发
+	updated:function(){
+		console.log('updated');
+	},
+	//摧毁
+	destoryed:function(){
+		console.log('destoryed');
+	},
+	methods:{
+		addAge:function(){
+			this.age++;
+		},
+		subFunc:function(){
+			console.log('form submit');
+		}
+	},
+	computed:{
+		//取得计算属性的getter,需要返回值
+		birth_year:function(){
+			//this指向的是app
+			return 2017-this.age+'年';
+		}
+	},
+	watch:{
+		first_name:function(val){
+			this.full_name = val + ' ' + this.last_name
+		},
+		last_name:function(val){
+			this.full_name = this.first_name + ' ' + val
+		}
+	}
+});
+</script>
+</html>

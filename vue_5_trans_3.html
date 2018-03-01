@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>列表过渡</title>
+</head>
+<style>
+.list-complete-item {
+	transition: all 1s;
+	display: inline-block;
+	margin-right: 10px;
+}
+.list-complete-enter, .list-complete-leave-active {
+	opacity: 0;
+	transform: translateY(30px);
+}
+.list-complete-leave-active {
+	position: absolute;
+}
+</style>
+<body>
+	<div id="ex">
+		<button @click='Add'>Add</button>
+		<button @click='Remove'>Remove</button>
+		<div>
+			<!-- list指定该组的名称，tag指定实例对象，默认为span -->
+			<transition-group name="list-complete" tag="div">
+			<!-- 每一项必须有单独的key -->
+			<span v-for="item in items" class="list-complete-item" :key="item">{{item}}</span>
+		</transition-group>
+	</div>
+</div>
+</div>
+</body>
+<script src="vue.js"></script>
+<script>
+var vm = new Vue({
+	el:'#ex',
+	data:{
+		items:[1,2,3,4,5],
+		last:6
+	},
+	methods:{
+		randomIndex: function () {
+			return Math.floor(Math.random() * this.items.length)
+		},
+		Add:function(){
+			this.items.splice(this.randomIndex(), 0, this.last++);
+		},
+		Remove:function(){
+			this.items.splice(this.randomIndex(), 1);
+		}
+	}
+})
+</script>
+</html>

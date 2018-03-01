@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>深入响应式原理</title>
+</head>
+<body>
+<div id="vm1">
+	{{a}},{{data}}
+</div>
+</body>
+<script src="vue.js"></script>
+<script>
+// 响应式
+// 只有初始化时的属性是响应式的，因为vue将其转化为了getter/setter，每一个app有一个watch，当发生变化时getter/setter通知watcher,watcher触发re-render
+var vm1 = new Vue({
+	el:'#vm1',
+	data:{
+		a:1,
+		data:{
+			a:2
+		}
+	}
+});
+// 改变data.b不会触发重绘，因为他没有watcher
+
+// setTimeout(function(){
+// 	alert('改变b');
+// 	vm1.data.b = 2;
+// },100);
+
+// 改变了data.a，触发了重绘，并且也会增加data.b
+
+// setTimeout(function(){
+// 	alert('改变a');
+// 	vm1.data.a = 11;
+// },200);
+
+// Vue 不允许在已经创建的实例上动态添加新的根级响应式属性(root-level reactive property)。然而它可以使用 Vue.set(object, key, value) 方法将响应属性添加到嵌套的对象上：
+
+// setTimeout(function(){
+// 	alert('添加新属性c');
+// 	Vue.set(vm1.data,'c',3);
+// },300);
+
+// 然而使用set方法改变b，却不会触发重绘
+
+// setTimeout(function(){
+// 	alert('改变b');
+// 	Vue.set(vm1.data,'b',22);
+// },400);
+
+// 那么如何才能让b的变化可以被响应呢？
+
+setTimeout(function(){
+	alert('使用新的对象替换原有的data');
+	vm1.data = Object.assign({}, vm1.data, { a: 1, b: 2 });
+},300);
+
+// 此时再改变b的话，就可以响应的改变了
+
+// setTimeout(function(){
+// 	alert('再次改变b');
+// 	vm1.data.b = 22;
+// },600);
+</script>
+</html>

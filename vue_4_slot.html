@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>Vue Basic</title>
+	<style>
+	.Alert__close {
+		font-weight: bold;
+		cursor: pointer;
+	}
+	.Alert--Success {
+		color: green;
+	}
+	.Alert--Warning {
+		color: #aa0;
+	}
+	.Alert--Error {
+		color: red;
+	}
+	</style>
+</head>
+<body>
+	<!-- 子组件的相关内容在父元素中放置 -->
+	<div id="alertCon">
+		<template>
+			<alert></alert>
+			<alert type="success">
+				<strong>Success!</strong> Looks good.
+			</alert>
+			<alert type="warning">
+				<strong>Warning!</strong> It is danger.
+			</alert>
+			<alert type="error">
+				<strong>Error!</strong> Something ban happened.
+			</alert>			
+		</template>
+	</div>
+</body>
+<script src="vue.js"></script>
+
+<!-- slot——即插槽，可以放置不同的内容，无内容时使用默认内容 -->
+<template id="alert-template">
+	<div v-bind:class='alertClasses'>
+		<slot><strong>Default</strong> Hellow World~</slot>
+	</div>
+</template>
+<script>
+Vue.component('alert',{
+	props:['type'],
+	template:'#alert-template',
+	computed:{
+		alertClasses:function(){
+			return {
+				'Alert--Success':this.type==='success',
+				'Alert--Error':this.type==='error',
+				'Alert--Warning':this.type==='warning'
+			}
+		}
+	}
+});
+var alertCon = new Vue({
+	el:'#alertCon'
+});
+</script>
+</html>

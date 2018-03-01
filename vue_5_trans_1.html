@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<title>单元素过渡</title>
+</head>
+<style>
+/* 可以设置不同的进入和离开动画 */
+/* 设置持续时间和动画函数 */
+/*进入时的结束状态 xx-enter-active*/
+.custom-appear-active-class,.slide-fade-enter-active {
+	transition: all .3s ease;
+}
+/*离开时的结束状态 xx-leave-active*/
+.slide-fade-leave-active {
+	transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+/*进入时的开始状态 xx-enter*/
+.custom-appear-class,.slide-fade-enter, .slide-fade-leave-active {
+	transform: translateX(10px);
+	opacity: 0;
+}
+</style>
+<body>
+	<!-- 过渡的css类名 -->
+	<div id="example-1">
+		<button @click="show = !show">
+			Toggle render
+		</button>
+		<!-- 设置自定义过渡动画类名 -->
+		<!-- enter-active-class="xxxx" -->
+		<!-- leava-active-class="xxxx" -->
+		<!-- appear用来设置组件第一次插入到dom时的样式 -->
+		<transition 
+		appear
+		appear-class="custom-appear-class"
+		appear-active-class="custom-appear-active-class"
+		name="slide-fade"
+		v-on:before-enter="beforeEnter"
+		v-on:enter="enter"
+		v-on:after-enter="afterEnter"
+		v-on:enter-cancelled="enterCancelled"
+		v-on:before-leave="beforeLeave"
+		v-on:leave="leave"
+		v-on:after-leave="afterLeave"
+		v-on:leave-cancelled="leaveCancelled"
+		>
+		<p v-if="show">hello</p>
+	</transition>
+</div>
+</body>
+<script src="vue.js"></script>
+<script>
+new Vue({
+	el: '#example-1',
+	data: {
+		show: true
+	},
+	// 可以在过渡执行阶段绑定事件
+	methods:{
+		beforeEnter:function(){console.log('beforeEnter')},
+		enter:function(){console.log('enter')},
+		afterEnter:function(){console.log('afterEnter')},
+		enterCancelled:function(){console.log('enterCancelled')},
+		beforeLeave:function(){console.log('beforeLeave')},
+		leave:function(){console.log('leave')},
+		afterLeave:function(){console.log('afterLeave')},
+		leaveCancelled:function(){console.log('leaveCancelled')},
+	}
+})
+</script>
+</html>
